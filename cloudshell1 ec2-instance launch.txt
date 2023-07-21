@@ -1,0 +1,189 @@
+Here are the steps to download, install, and configure Jenkins on Linux Ubuntu using a shell script:
+
+1. Open a terminal window on your Ubuntu machine.
+
+    Create a shell script file using the following command:
+
+    $ vi jenkins-install.sh
+
+2. Paste the following code into the shell script file:
+
+```
+# Debian/Ubutu
+#!/bin/bash
+
+# Setup Hostname
+sudo hostnamectl set-hostname "jenkins.cloudbinary.io"
+
+# Update the hostname part of Host File
+echo "`hostname -I | awk '{ print $1 }'` `hostname`" >> /etc/hosts
+
+# Update Ubuntu Repository
+sudo apt-get update
+
+# Download, & Install Utility Softwares
+sudo apt-get install git wget unzip curl tree -y
+
+# Download, Install Java 11
+sudo apt-get install openjdk-11-jdk -y
+
+# Backup the Environment File
+sudo cp -pvr /etc/environment "/etc/environment_$(date +%F_%R)"
+
+# Create Environment Variables
+echo "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/" >> /etc/environment
+
+# Download, Install Maven 
+sudo apt-get install maven -y
+
+# Backup the Environment File
+sudo cp -pvr /etc/environment "/etc/environment_$(date +%F_%R)"
+
+# Create Environment Variables
+echo "MAVEN_HOME=/usr/share/maven" >> /etc/environment
+
+# Compile the Configuration
+source /etc/environment
+
+# Add Jenkins repository key
+wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+
+# Add Jenkins repository to apt sources
+echo deb https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list
+
+# Update apt and install Jenkins
+sudo apt-get update
+sudo apt-get install -y jenkins
+
+# Start Jenkins service
+sudo systemctl start jenkins
+
+# Enable Jenkins service to start on boot
+sudo systemctl enable jenkins
+
+# Note: The above script is for installing Jenkins on Ubuntu with OpenJDK 11. 
+# If you have a different version of Ubuntu or want to use a different version of Java, you may need to modify the script accordingly.
+```
+
+```
+# CentOS/AmazonLinux2/Redhat
+#!/bin/bash
+
+# Setup Hostname
+sudo hostnamectl set-hostname "jenkins.cloudbinary.io"
+
+# Update the hostname part of Host File
+echo "`hostname -I | awk '{ print $1 }'` `hostname`" >> /etc/hosts
+
+# Update Repository
+sudo yum update
+
+# Download, & Install Utility Softwares
+sudo yum install git wget unzip curl tree -y
+
+# Install Java Development Kit (JDK)
+#sudo yum install -y java-1.8.0-openjdk-devel
+
+sudo yum install -y java-17-amazon-corretto ## AmazonLinux2
+
+# Backup the Environment File
+sudo cp -pvr /etc/environment "/etc/environment_$(date +%F_%R)"
+
+# Create Environment Variables
+# echo "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/" >> /etc/environment
+
+echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk/" >> /etc/environment ## AmazonLinux2
+
+# Download, Install Maven 
+sudo yum install maven -y
+
+# Backup the Environment File
+sudo cp -pvr /etc/environment "/etc/environment_$(date +%F_%R)"
+    
+# Create Environment Variables
+echo "MAVEN_HOME=/usr/share/maven" >> /etc/environment
+
+# Compile the Configuration
+source /etc/environment
+
+# Add Jenkins repository to yum configuration
+sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins.io/redhat-stable/jenkins.repo
+
+# Import Jenkins repository key
+sudo rpm --import http://pkg.jenkins.io/redhat-stable/jenkins.io.key
+
+# Install Jenkins
+sudo yum install -y jenkins
+
+# Start Jenkins service
+sudo systemctl start jenkins
+
+# Enable Jenkins service to start on boot
+sudo systemctl enable jenkins
+
+# Note: The above script is for installing Jenkins on CentOS 7 with OpenJDK 8. 
+# If you have a different version of CentOS or want to use a different version of Java, you may need to modify the script accordingly.
+```
+
+3. Save and close the shell script file.
+
+4. Make the shell script file executable using the following command:
+
+    $ chmod +x jenkins-install.sh
+
+5. Run the shell script file using the following command:
+
+    $ ./jenkins-install.sh
+
+6. Wait for the installation process to complete.
+
+7. Once the installation is complete, open a web browser and navigate to http://localhost:8080.
+
+    `http://<your_linux_server_ip_address>:8080`
+
+8. Follow the prompts to complete the Jenkins setup wizard, including creating an admin user and installing any necessary plugins.
+
+9. Once the setup is complete, Jenkins will be ready to use.
+
+
+Download Install Configure Jenkins on Windows using powershell script:
+
+    Here are the steps to download, install, and configure Jenkins on Windows using a PowerShell script:
+
+    1. Open PowerShell as an administrator.
+
+    2. Create a new directory for Jenkins installation using the following command:
+
+    ```
+    New-Item -ItemType Directory -Path "C:\Program Files\Jenkins" -Force
+    ```
+    3. Change the directory to the Jenkins installation directory using the following command:
+    
+    ```
+    cd "C:\Program Files\Jenkins"
+    ```
+    4. Download the Jenkins installation package using the following command:
+
+    ```
+    Invoke-WebRequest -Uri "https://get.jenkins.io/war-stable/latest/jenkins.war" -OutFile "jenkins.war"
+    ```
+
+    5. Install the Jenkins service using the following command:
+
+    ```
+    java -jar .\jenkins.war --install-service
+    ```
+
+    6. Start the Jenkins service using the following command:
+
+    ```
+    Start-Service Jenkins
+    ```
+
+    7. Open a web browser and navigate to http://localhost:8080
+
+    8. Follow the prompts to complete the Jenkins setup wizard, including creating an admin user and installing any necessary plugins.
+
+    9. Once the setup is complete, Jenkins will be ready to use.
+
+    Note: The above script is for installing Jenkins on Windows using the built-in Windows service wrapper. If you prefer to install Jenkins as a Windows service using a separate service wrapper, you will need to modify the script accordingly. Additionally, you may need to adjust the firewall settings to allow incoming traffic to port 8080.
